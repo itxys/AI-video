@@ -10,11 +10,12 @@ import { geminiService } from './services/geminiService';
 
 const PROJECTS_KEY = 'visionary_projects_v1';
 const CHAR_BIBLE_KEY = 'visionary_char_bible_v1';
+const GLOBAL_LIB_KEY = 'visionary_global_library_v1';
 
 const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>('zh');
   const [hasKey, setHasKey] = useState<boolean | null>(null);
-  const [step, setStep] = useState<'seed' | 'wizard' | 'refining' | 'concept_review' | 'script'>('seed');
+  const [step, setStep] = useState<'seed' | 'wizard' | 'refining' | 'concept_review' | 'script' | 'library'>('seed');
   const [creationMode, setCreationMode] = useState<'quick' | 'guided'>('quick');
   const [wizardData, setWizardData] = useState({ genre: 'Sci-Fi', conflict: '', protagonist: '', seed: '' });
   const [wizardStep, setWizardStep] = useState(0);
@@ -25,6 +26,7 @@ const App: React.FC = () => {
   const [imageSize, setImageSize] = useState<ImageSize>('1K');
   const [referenceImages, setReferenceImages] = useState<string[]>([]);
   const [characterProfiles, setCharacterProfiles] = useState<CharacterProfile[]>([]);
+  const [globalLibrary, setGlobalLibrary] = useState<CharacterProfile[]>([]);
   const [isGeneratingRef, setIsGeneratingRef] = useState<number | null>(null);
   
   const [isProcessing, setIsProcessing] = useState(false);
@@ -59,21 +61,27 @@ const App: React.FC = () => {
       
       const chars = localStorage.getItem(CHAR_BIBLE_KEY);
       if (chars) setCharacterProfiles(JSON.parse(chars));
+
+      const lib = localStorage.getItem(GLOBAL_LIB_KEY);
+      if (lib) setGlobalLibrary(JSON.parse(lib));
     } catch (e) { 
       console.error("Failed to load local storage data:", e); 
     }
   }, []);
 
-  // Persistent Character Bible Sync (Auto-save drafts)
+  // Persistent Character Bible Sync
   useEffect(() => {
-    if (characterProfiles.length > 0 || localStorage.getItem(CHAR_BIBLE_KEY)) {
-      try {
-        localStorage.setItem(CHAR_BIBLE_KEY, JSON.stringify(characterProfiles));
-      } catch (e) {
-        console.warn("Character bible auto-save failed (possibly storage limit reached):", e);
-      }
-    }
+    try {
+      localStorage.setItem(CHAR_BIBLE_KEY, JSON.stringify(characterProfiles));
+    } catch (e) { console.warn(e); }
   }, [characterProfiles]);
+
+  // Global Library Sync
+  useEffect(() => {
+    try {
+      localStorage.setItem(GLOBAL_LIB_KEY, JSON.stringify(globalLibrary));
+    } catch (e) { console.warn(e); }
+  }, [globalLibrary]);
 
   const handleSelectKey = async () => {
     // @ts-ignore
@@ -155,7 +163,6 @@ const App: React.FC = () => {
       const newProject: SavedProject = {
         id: projectId,
         timestamp: Date.now(),
-        // Ensure characterProfiles are deeply associated with the saved script
         script: { ...script, characterProfiles }, 
         aspectRatio,
         imageSize,
@@ -245,6 +252,20 @@ const App: React.FC = () => {
     setScript({ ...script, shots: updatedShots });
   }, [script]);
 
+  const handleImportFromLib = (char: CharacterProfile) => {
+    if (characterProfiles.find(p => p.id === char.id)) return;
+    setCharacterProfiles([...characterProfiles, { ...char }]);
+  };
+
+  const handleSaveToLib = (char: CharacterProfile) => {
+    setGlobalLibrary(prev => {
+      const exists = prev.find(p => p.id === char.id);
+      if (exists) return prev.map(p => p.id === char.id ? { ...char, isGlobal: true } : p);
+      return [...prev, { ...char, isGlobal: true }];
+    });
+    alert(language === 'zh' ? '已保存到全局角色库' : 'Saved to global library');
+  };
+
   if (hasKey === false) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
@@ -285,7 +306,6 @@ const App: React.FC = () => {
         setScript(p.script); 
         setStep('script'); 
         setCurrentProjectId(p.id); 
-        // Ensure character profiles are synced from the loaded project
         setCharacterProfiles(p.script.characterProfiles || []);
         if(p.aspectRatio) setAspectRatio(p.aspectRatio);
         if(p.imageSize) setImageSize(p.imageSize);
@@ -305,7 +325,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           
           {step === 'seed' && (
-            <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in zoom-in-95 duration-500">
+            <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in zoom-in-95 duration-500 pb-20">
               <div className="text-center space-y-6">
                 <h2 className="text-6xl font-black text-white tracking-tight">{t.heroTitle}</h2>
                 <p className="text-slate-400 text-xl max-w-2xl mx-auto leading-relaxed">{t.heroSubtitle}</p>
@@ -355,6 +375,23 @@ const App: React.FC = () => {
                 </div>
               </div>
 
+              <div className="flex flex-col items-center gap-8">
+                <button 
+                  onClick={() => setStep('library')}
+                  className="px-10 py-5 bg-slate-900 border border-slate-800 rounded-2xl flex items-center gap-4 hover:bg-slate-800 transition-all group"
+                >
+                   <div className="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                   </div>
+                   <div className="text-left">
+                      <h4 className="font-bold text-white uppercase tracking-wider">{t.btnManageLib}</h4>
+                      <p className="text-xs text-slate-500">Maintain visual consistency across productions.</p>
+                   </div>
+                </button>
+              </div>
+
               <div className="bg-slate-900/30 p-8 rounded-3xl border border-slate-800 flex flex-wrap gap-10 items-center justify-center">
                  <div className="space-y-3">
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">{t.labelAspect}</label>
@@ -382,71 +419,44 @@ const App: React.FC = () => {
             </div>
           )}
 
-          {step === 'wizard' && (
-            <div className="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-right duration-500">
-               <div className="flex items-center justify-between mb-8">
-                 <h2 className="text-2xl font-black text-white">{t.wizardTitle}</h2>
-                 <div className="flex gap-2">
-                    {[0,1,2].map(i => <div key={i} className={`h-1.5 w-10 rounded-full transition-all duration-300 ${i <= wizardStep ? 'bg-emerald-500' : 'bg-slate-800'}`} />)}
-                 </div>
-               </div>
-               
-               <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl space-y-8 backdrop-blur-md">
-                 {wizardStep === 0 && (
-                   <div className="space-y-6">
-                     <h3 className="text-emerald-400 font-bold uppercase tracking-widest text-xs">{t.wizardStep1}</h3>
-                     <div className="grid grid-cols-2 gap-3">
-                       {['Cyberpunk', 'Film Noir', 'Space Opera', 'Modern Thriller', 'Fantasy', 'Horror'].map(g => (
-                         <button key={g} onClick={() => setWizardData({...wizardData, genre: g})} className={`p-4 rounded-xl border text-sm font-bold transition-all ${wizardData.genre === g ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}>{g}</button>
-                       ))}
-                     </div>
-                   </div>
-                 )}
-                 {wizardStep === 1 && (
-                   <div className="space-y-6">
-                     <h3 className="text-emerald-400 font-bold uppercase tracking-widest text-xs">{t.wizardStep2}</h3>
-                     <textarea 
-                        value={wizardData.conflict} onChange={e => setWizardData({...wizardData, conflict: e.target.value})}
-                        placeholder="What is the main problem? e.g. A stolen memory, a collapsing bridge..."
-                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 text-white outline-none focus:border-emerald-500 shadow-inner min-h-[150px]"
-                     />
-                   </div>
-                 )}
-                 {wizardStep === 2 && (
-                   <div className="space-y-6">
-                     <h3 className="text-emerald-400 font-bold uppercase tracking-widest text-xs">{t.wizardStep3}</h3>
-                     <textarea 
-                        value={wizardData.protagonist} onChange={e => setWizardData({...wizardData, protagonist: e.target.value})}
-                        placeholder="Who is the hero and what is their singular goal?"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 text-white outline-none focus:border-emerald-500 shadow-inner min-h-[150px]"
-                     />
-                   </div>
-                 )}
+          {step === 'library' && (
+            <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">
+               <div className="flex items-center justify-between">
+                  <button onClick={() => setStep('seed')} className="flex items-center gap-2 text-indigo-400 font-bold hover:text-indigo-300 transition-colors">
+                     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                     {t.btnBack}
+                  </button>
+                  <h2 className="text-3xl font-black text-white uppercase tracking-widest">{t.libraryTitle}</h2>
+                  <div className="w-20"></div>
                </div>
 
-               <div className="flex gap-4">
-                 <button onClick={() => wizardStep === 0 ? setStep('seed') : setWizardStep(wizardStep-1)} className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold transition-all">{t.btnBack}</button>
-                 {wizardStep < 2 ? (
-                   <button onClick={() => setWizardStep(wizardStep+1)} className="flex-[2] py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-white shadow-lg shadow-emerald-600/20">{t.wizardNext}</button>
-                 ) : (
-                   <button onClick={handleRefineConcept} className="flex-[2] py-4 bg-emerald-500 hover:bg-emerald-400 rounded-xl font-black text-white shadow-lg shadow-emerald-500/20">{t.wizardFinish}</button>
-                 )}
-               </div>
-            </div>
-          )}
-
-          {step === 'refining' && (
-            <div className="h-full flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-700">
-               <div className="relative">
-                 <div className="w-24 h-24 border-8 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin"></div>
-                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-indigo-500/20 rounded-full animate-pulse"></div>
+               {globalLibrary.length === 0 ? (
+                 <div className="bg-slate-900/40 border-2 border-dashed border-slate-800 rounded-3xl p-20 text-center">
+                    <p className="text-slate-500 text-lg">{t.libEmpty}</p>
+                    <button onClick={() => setGlobalLibrary([{id: crypto.randomUUID(), name:'', description:'', keyFeatures:[], isGlobal: true}])} className="mt-6 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">{t.addCharacter}</button>
                  </div>
-               </div>
-               <div className="text-center space-y-2">
-                 <p className="text-indigo-400 font-black uppercase tracking-[0.4em] text-lg animate-pulse">{language === 'zh' ? '正在构思分镜...' : 'Developing Cinematic Vision...'}</p>
-                 <p className="text-slate-500 text-sm">Gemini AI is crafting your narrative structure.</p>
-               </div>
+               ) : (
+                 <CharacterBible 
+                    profiles={globalLibrary}
+                    isGeneratingRef={isGeneratingRef}
+                    onAdd={() => setGlobalLibrary([...globalLibrary, {id: crypto.randomUUID(), name:'', description:'', keyFeatures:[], isGlobal: true}])}
+                    onUpdate={(i,f,v) => {
+                       const u = [...globalLibrary];
+                       (u[i] as any)[f] = typeof v === 'string' && f === 'keyFeatures' ? v.split(',').map(s=>s.trim()) : v;
+                       setGlobalLibrary(u);
+                    }}
+                    onRemove={(i) => setGlobalLibrary(globalLibrary.filter((_,idx) => idx !== i))}
+                    onGenerateRef={async (i) => {
+                      setIsGeneratingRef(i);
+                      try {
+                        const url = await geminiService.generateCharacterReference(globalLibrary[i], 'cinematic');
+                        const u = [...globalLibrary]; u[i].referenceImageUrl = url;
+                        setGlobalLibrary(u);
+                      } finally { setIsGeneratingRef(null); }
+                    }}
+                    language={language}
+                 />
+               )}
             </div>
           )}
 
@@ -464,11 +474,11 @@ const App: React.FC = () => {
                  </div>
 
                  <div className="pt-10 border-t border-slate-800 space-y-12">
+                    {/* Visual Style */}
                     <div className="space-y-6">
                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">Visual Style Selection</h4>
                        <StylePresets selectedStyle={visualStyle} onSelect={setVisualStyle} language={language} />
-                       
-                       <div className="mt-6 animate-in fade-in duration-300">
+                       <div className="mt-6">
                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.labelCustomStyle}</label>
                           <textarea 
                             value={customStyleDescription}
@@ -479,12 +489,37 @@ const App: React.FC = () => {
                        </div>
                     </div>
                     
+                    {/* References */}
                     <div className="space-y-4">
                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">{t.labelReferences}</h4>
                        <ReferenceImageUploader images={referenceImages} onImagesChange={setReferenceImages} language={language} />
                     </div>
 
+                    {/* Library Importer */}
+                    {globalLibrary.length > 0 && (
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">{t.libraryTitle}</h4>
+                        <div className="flex flex-wrap gap-4">
+                           {globalLibrary.map(char => (
+                             <button 
+                              key={char.id}
+                              onClick={() => handleImportFromLib(char)}
+                              disabled={!!characterProfiles.find(p => p.id === char.id)}
+                              className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${characterProfiles.find(p => p.id === char.id) ? 'bg-slate-800 border-slate-700 opacity-50 grayscale' : 'bg-slate-900 border-slate-800 hover:border-indigo-500'}`}
+                             >
+                                <div className="w-10 h-10 rounded-full bg-slate-950 overflow-hidden border border-slate-800">
+                                   {char.referenceImageUrl && <img src={char.referenceImageUrl} className="w-full h-full object-cover" />}
+                                </div>
+                                <span className="text-xs font-bold text-slate-300">{char.name || 'Unnamed'}</span>
+                             </button>
+                           ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Character Bible */}
                     <div className="space-y-4">
+                       <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">{t.labelCharacterProfile}</h4>
                        <CharacterBible 
                          profiles={characterProfiles} 
                          isGeneratingRef={isGeneratingRef}
@@ -495,18 +530,14 @@ const App: React.FC = () => {
                            setCharacterProfiles(u); 
                          }} 
                          onRemove={(i) => setCharacterProfiles(characterProfiles.filter((_,idx) => idx !== i))} 
+                         onSaveToLib={handleSaveToLib}
                          onGenerateRef={async (i) => { 
                            setIsGeneratingRef(i);
                            try {
                              const url = await geminiService.generateCharacterReference(characterProfiles[i], visualStyle); 
-                             const u = [...characterProfiles]; 
-                             u[i].referenceImageUrl = url; 
+                             const u = [...characterProfiles]; u[i].referenceImageUrl = url; 
                              setCharacterProfiles(u);
-                           } catch (e) {
-                             handleApiError(e);
-                           } finally {
-                             setIsGeneratingRef(null);
-                           }
+                           } catch (e) { handleApiError(e); } finally { setIsGeneratingRef(null); }
                          }} 
                          language={language} 
                        />

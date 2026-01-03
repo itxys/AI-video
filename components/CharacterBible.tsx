@@ -8,6 +8,7 @@ interface CharacterBibleProps {
   onUpdate: (index: number, field: keyof CharacterProfile, value: string) => void;
   onRemove: (index: number) => void;
   onGenerateRef: (index: number) => void;
+  onSaveToLib?: (char: CharacterProfile) => void;
   language: Language;
   isGeneratingRef?: number | null;
 }
@@ -18,6 +19,7 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
   onUpdate, 
   onRemove, 
   onGenerateRef,
+  onSaveToLib,
   language,
   isGeneratingRef
 }) => {
@@ -45,16 +47,30 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {profiles.map((char, idx) => (
           <div key={char.id} className="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl relative group flex flex-col sm:flex-row gap-5 animate-in fade-in slide-in-from-top-2 duration-300">
-            {/* Remove button */}
-            <button 
-              type="button"
-              onClick={() => onRemove(idx)}
-              className="absolute -top-2 -right-2 w-7 h-7 bg-slate-800 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-all shadow-lg opacity-0 group-hover:opacity-100 z-10"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            {/* Action buttons */}
+            <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20">
+               {onSaveToLib && (
+                 <button 
+                  type="button"
+                  onClick={() => onSaveToLib(char)}
+                  title={t.btnSaveToLib}
+                  className="w-7 h-7 bg-indigo-600 hover:bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg"
+                 >
+                   <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                   </svg>
+                 </button>
+               )}
+               <button 
+                type="button"
+                onClick={() => onRemove(idx)}
+                className="w-7 h-7 bg-slate-800 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-all shadow-lg"
+               >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+               </button>
+            </div>
 
             {/* Visual Ref Preview */}
             <div className="flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative group/ref mx-auto sm:mx-0 shadow-inner">
@@ -66,6 +82,9 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                      </svg>
                   </div>
+                  {char.isGlobal && (
+                    <div className="absolute top-2 left-2 bg-indigo-500 px-1.5 py-0.5 rounded text-[8px] font-black text-white uppercase tracking-tighter">Library Asset</div>
+                  )}
                 </div>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-slate-700">

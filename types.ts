@@ -15,6 +15,7 @@ export interface CharacterProfile {
   description: string;
   keyFeatures: string[];
   referenceImageUrl?: string;
+  isGlobal?: boolean; // Indicates if it's saved in the global library
 }
 
 export type ShotStatus = 'idle' | 'generating' | 'completed' | 'error' | 'animating';
@@ -134,7 +135,12 @@ export const TRANSLATIONS = {
     placeholderCustomStyle: "e.g. Ghibli aesthetic, oil painting texture, soft golden hour lighting...",
     confirmGenTitle: "Start Generation?",
     confirmGenDesc: "This will use processing resources. Continue?",
-    btnConfirm: "Confirm"
+    btnConfirm: "Confirm",
+    libraryTitle: "Global Character Library",
+    btnImportFromLib: "Import from Library",
+    btnSaveToLib: "Save to Library",
+    libEmpty: "Your character library is empty. Create characters to see them here.",
+    btnManageLib: "Manage Library"
   },
   zh: {
     heroTitle: 'Visionary AI 创意工作室',
@@ -196,6 +202,11 @@ export const TRANSLATIONS = {
     placeholderCustomStyle: "例如：吉卜力美术风格，油画质感，柔和的黄金时段光效...",
     confirmGenTitle: "确定开始生成？",
     confirmGenDesc: "该过程将消耗计算资源。是否继续？",
-    btnConfirm: "确认"
+    btnConfirm: "确认",
+    libraryTitle: "全局角色库",
+    btnImportFromLib: "从库中导入",
+    btnSaveToLib: "同步到角色库",
+    libEmpty: "角色库为空。在项目中创建角色并同步，或在此手动添加。",
+    btnManageLib: "管理角色库"
   }
 };
