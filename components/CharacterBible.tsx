@@ -27,36 +27,38 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-semibold text-slate-300">
-          {t.labelCharacterProfile}
-        </label>
-        <button 
-          type="button" 
-          onClick={onAdd}
-          className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1 bg-indigo-500/10 px-3 py-2 rounded-lg border border-indigo-500/20"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          {t.addCharacter}
-        </button>
-      </div>
+    <div className="space-y-8">
+      {profiles.length > 1 && (
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-semibold text-slate-300">
+            {t.labelCharacterProfile}
+          </label>
+          <button 
+            type="button" 
+            onClick={onAdd}
+            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1 bg-indigo-500/10 px-4 py-2 rounded-xl border border-indigo-500/20"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            {t.addCharacter}
+          </button>
+        </div>
+      )}
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-8">
         {profiles.map((char, idx) => (
-          <div key={char.id} className="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl relative group flex flex-col sm:flex-row gap-5 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div key={char.id} className="bg-slate-900/40 border border-slate-800 p-8 rounded-[2rem] relative group flex flex-col lg:flex-row gap-10 animate-in fade-in slide-in-from-top-2 duration-300 shadow-xl">
             {/* Action buttons */}
-            <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20">
+            <div className="absolute -top-3 -right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
                {onSaveToLib && (
                  <button 
                   type="button"
                   onClick={() => onSaveToLib(char)}
                   title={t.btnSaveToLib}
-                  className="w-7 h-7 bg-indigo-600 hover:bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg"
+                  className="w-10 h-10 bg-indigo-600 hover:bg-indigo-500 rounded-full flex items-center justify-center text-white shadow-xl transition-all hover:scale-110 active:scale-90"
                  >
-                   <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                    </svg>
                  </button>
@@ -64,34 +66,34 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
                <button 
                 type="button"
                 onClick={() => onRemove(idx)}
-                className="w-7 h-7 bg-slate-800 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-all shadow-lg"
+                className="w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-all shadow-xl hover:scale-110 active:scale-90"
                >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
                </button>
             </div>
 
             {/* Visual Ref Preview */}
-            <div className="flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative group/ref mx-auto sm:mx-0 shadow-inner">
+            <div className="flex-shrink-0 w-full lg:w-64 h-80 lg:h-auto bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 relative group/ref shadow-inner">
               {char.referenceImageUrl ? (
                 <div className="relative w-full h-full cursor-zoom-in" onClick={() => setPreviewImage(char.referenceImageUrl!)}>
                   <img src={char.referenceImageUrl} alt={char.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/ref:opacity-100 transition-opacity flex items-center justify-center">
-                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                     <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white drop-shadow-2xl" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                      </svg>
                   </div>
                   {char.isGlobal && (
-                    <div className="absolute top-2 left-2 bg-indigo-500 px-1.5 py-0.5 rounded text-[8px] font-black text-white uppercase tracking-tighter">Library Asset</div>
+                    <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest shadow-lg">Library</div>
                   )}
                 </div>
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-slate-700">
-                   <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-700 bg-slate-950/40">
+                   <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mb-4 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                    </svg>
-                   <span className="text-[10px] font-bold uppercase tracking-wider opacity-40">No Ref</span>
+                   <span className="text-xs font-black uppercase tracking-widest opacity-30">Concept Preview</span>
                 </div>
               )}
               
@@ -99,95 +101,124 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onGenerateRef(idx); }}
                 disabled={isGeneratingRef === idx}
-                className={`absolute bottom-2 left-2 right-2 bg-slate-950/80 backdrop-blur-md flex items-center justify-center opacity-0 group-hover/ref:opacity-100 transition-all disabled:opacity-100 py-1.5 rounded-lg border border-white/10 ${char.referenceImageUrl ? 'hover:bg-indigo-600' : ''}`}
+                className={`absolute bottom-6 left-6 right-6 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center opacity-0 group-hover/ref:opacity-100 transition-all disabled:opacity-100 py-3 rounded-2xl border border-white/10 ${char.referenceImageUrl ? 'hover:bg-indigo-600' : 'hover:bg-indigo-600'}`}
               >
                 {isGeneratingRef === idx ? (
-                  <div className="w-4 h-4 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
                 ) : (
-                  <span className="text-[9px] font-black text-white uppercase tracking-tighter">{t.btnGenCharRef}</span>
+                  <span className="text-[10px] font-black text-white uppercase tracking-widest">{t.btnGenCharRef}</span>
                 )}
               </button>
             </div>
 
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="sm:col-span-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{t.characterName}</label>
+            <div className="flex-1 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterName}</label>
                   <input 
                     type="text" 
                     placeholder={t.characterName}
                     value={char.name}
                     onChange={(e) => onUpdate(idx, 'name', e.target.value)}
-                    className="bg-slate-950 border border-slate-800 w-full px-3 py-2 rounded-xl text-sm font-bold text-white outline-none focus:border-indigo-500 transition-colors shadow-inner"
+                    className="bg-slate-950 border border-slate-800 w-full px-5 py-3 rounded-2xl text-base font-bold text-white outline-none focus:border-indigo-500 transition-all shadow-inner"
                   />
                 </div>
                 
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{t.characterAge}</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. 28"
-                    value={char.age || ''}
-                    onChange={(e) => onUpdate(idx, 'age', e.target.value)}
-                    className="bg-slate-950 border border-slate-800 w-full px-3 py-2 rounded-xl text-xs text-slate-300 outline-none focus:border-indigo-500 transition-colors shadow-inner"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{t.characterGender}</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Male"
-                    value={char.gender || ''}
-                    onChange={(e) => onUpdate(idx, 'gender', e.target.value)}
-                    className="bg-slate-950 border border-slate-800 w-full px-3 py-2 rounded-xl text-xs text-slate-300 outline-none focus:border-indigo-500 transition-colors shadow-inner"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{t.characterOccupation}</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Undercover Agent"
-                    value={char.occupation || ''}
-                    onChange={(e) => onUpdate(idx, 'occupation', e.target.value)}
-                    className="bg-slate-950 border border-slate-800 w-full px-3 py-2 rounded-xl text-xs text-slate-300 outline-none focus:border-indigo-500 transition-colors shadow-inner"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterAge}</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 28"
+                      value={char.age || ''}
+                      onChange={(e) => onUpdate(idx, 'age', e.target.value)}
+                      className="bg-slate-950 border border-slate-800 w-full px-5 py-3 rounded-2xl text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all shadow-inner"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterGender}</label>
+                    <input 
+                      type="text" 
+                      placeholder="M/F/O"
+                      value={char.gender || ''}
+                      onChange={(e) => onUpdate(idx, 'gender', e.target.value)}
+                      className="bg-slate-950 border border-slate-800 w-full px-5 py-3 rounded-2xl text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all shadow-inner"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{t.characterTraits}</label>
-                <textarea 
-                  placeholder={t.characterTraits}
-                  value={char.keyFeatures.join(', ')}
-                  onChange={(e) => onUpdate(idx, 'keyFeatures', e.target.value)}
-                  className="bg-slate-950 border border-slate-800 w-full p-3 text-xs text-slate-400 outline-none focus:border-indigo-500 transition-colors rounded-xl resize-none h-20 shadow-inner"
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterOccupation}</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Undercover Detective / Cyberpunk Hacker"
+                  value={char.occupation || ''}
+                  onChange={(e) => onUpdate(idx, 'occupation', e.target.value)}
+                  className="bg-slate-950 border border-slate-800 w-full px-5 py-3 rounded-2xl text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all shadow-inner"
                 />
               </div>
 
-              <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{t.characterDescription}</label>
-                <textarea 
-                  placeholder={t.characterDescription}
-                  value={char.description || ''}
-                  onChange={(e) => onUpdate(idx, 'description', e.target.value)}
-                  className="bg-slate-950 border border-slate-800 w-full p-3 text-xs text-slate-400 outline-none focus:border-indigo-500 transition-colors rounded-xl resize-none h-24 shadow-inner"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterTraits}</label>
+                  <textarea 
+                    placeholder="Physical features, outfits, identifiable marks..."
+                    value={char.keyFeatures.join(', ')}
+                    onChange={(e) => onUpdate(idx, 'keyFeatures', e.target.value)}
+                    className="bg-slate-950 border border-slate-800 w-full p-5 text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all rounded-2xl resize-none h-24 shadow-inner leading-relaxed"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterDescription}</label>
+                  <textarea 
+                    placeholder="Short summary of the character's core identity..."
+                    value={char.description || ''}
+                    onChange={(e) => onUpdate(idx, 'description', e.target.value)}
+                    className="bg-slate-950 border border-slate-800 w-full p-5 text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all rounded-2xl resize-none h-24 shadow-inner leading-relaxed"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-6 pt-4 border-t border-slate-800/50">
+                <div>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterPersonality}</label>
+                  <textarea 
+                    placeholder="Behavioral traits, tone of voice, typical reactions..."
+                    value={char.personality || ''}
+                    onChange={(e) => onUpdate(idx, 'personality', e.target.value)}
+                    className="bg-slate-950 border border-slate-800 w-full p-5 text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all rounded-2xl h-24 shadow-inner leading-relaxed"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">{t.characterBackstory}</label>
+                  <textarea 
+                    placeholder="Historical context, motivations, past events..."
+                    value={char.backstory || ''}
+                    onChange={(e) => onUpdate(idx, 'backstory', e.target.value)}
+                    className="bg-slate-950 border border-slate-800 w-full p-5 text-sm text-slate-300 outline-none focus:border-indigo-500 transition-all rounded-2xl h-32 shadow-inner leading-relaxed"
+                  />
+                </div>
               </div>
             </div>
           </div>
         ))}
+        {profiles.length === 0 && profiles.length > 0 && (
+          <button onClick={onAdd} className="w-full py-20 border-2 border-dashed border-slate-800 rounded-3xl text-slate-600 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex flex-col items-center gap-4 group">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+            <span className="font-black uppercase tracking-widest text-xs">{t.addCharacter}</span>
+          </button>
+        )}
       </div>
 
-      {/* Large Image Preview Modal */}
+      {/* Modal Preview logic stays the same */}
       {previewImage && (
         <div 
-          className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300"
+          className="fixed inset-0 z-[110] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300"
           onClick={() => setPreviewImage(null)}
         >
           <button 
-            className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all z-10"
+            className="absolute top-10 right-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all z-10"
             onClick={() => setPreviewImage(null)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -198,12 +229,9 @@ export const CharacterBible: React.FC<CharacterBibleProps> = ({
           <div className="relative max-w-full max-h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <img 
               src={previewImage} 
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10 animate-in zoom-in-95 duration-500" 
+              className="max-w-full max-h-[90vh] object-contain rounded-3xl shadow-2xl border border-white/10 animate-in zoom-in-95 duration-500" 
               alt="Character Preview" 
             />
-            <div className="absolute -bottom-10 left-0 right-0 text-center">
-               <p className="text-slate-500 text-xs font-medium tracking-widest uppercase">Reference Concept Sheet</p>
-            </div>
           </div>
         </div>
       )}

@@ -54,7 +54,7 @@ export class GeminiService {
     const styleDesc = styleObj ? styleObj.description.en : style;
 
     const charContext = characters && characters.length > 0 
-      ? `THE CHARACTER BIBLE (STRICTLY ADHERE TO THESE BIOGRAPHIES): ${characters.map(c => `[ID: ${c.id}] Name: ${c.name}, Bio: ${c.description}`).join('; ')}`
+      ? `THE CHARACTER BIBLE (STRICTLY ADHERE TO THESE BIOGRAPHIES): ${characters.map(c => `[ID: ${c.id}] Name: ${c.name}, Bio: ${c.description}, Personality: ${c.personality || 'N/A'}, Backstory: ${c.backstory || 'N/A'}`).join('; ')}`
       : "";
 
     const response = await ai.models.generateContent({
@@ -72,7 +72,7 @@ export class GeminiService {
       2. ${languageInstruction}
       3. CRITICAL CONSISTENCY RULE: Every "visualPrompt" MUST be in English.
       4. "visualPrompt" MUST act as a precise image generation prompt. It must explicitly include the style keyword "${styleName}" and detailed descriptions.
-      5. CHARACTER PERSISTENCE: If a character from the "CHARACTER BIBLE" is in the shot, you MUST include their full physical traits in the "visualPrompt". Describe their features exactly as provided.
+      5. CHARACTER PERSISTENCE: If a character from the "CHARACTER BIBLE" is in the shot, you MUST include their full physical traits and reflect their personality in their pose/expression in the "visualPrompt". Describe their features exactly as provided.
       6. "characterInvolved" must contain the ID of the primary character featured in that shot.`,
       config: {
         responseMimeType: "application/json",
@@ -147,7 +147,7 @@ export class GeminiService {
     if (shot.characterInvolved) {
       const char = characters.find(c => c.id === shot.characterInvolved);
       if (char) {
-        characterEmphasis = `[CHARACTER IDENTITY]: Name: ${char.name}. Traits: ${char.keyFeatures.join(', ')}. ${char.description}.`;
+        characterEmphasis = `[CHARACTER IDENTITY]: Name: ${char.name}. Traits: ${char.keyFeatures.join(', ')}. Personality: ${char.personality || 'Standard'}. Backstory Context: ${char.backstory || 'None'}. Expression and pose should reflect their personality.`;
         if (char.referenceImageUrl) {
           const data = char.referenceImageUrl.split('base64,')[1] || char.referenceImageUrl;
           parts.push({ inlineData: { data, mimeType: 'image/png' } });
@@ -185,7 +185,7 @@ ${itemEmphasis}
 [AESTHETIC]: ${styleName} (${styleKeywords})
 ${customStyleDescription ? `[STYLE DIRECTION]: ${customStyleDescription}` : ""}
 
-[DIRECTIVE]: Match composition and lighting to the provided images. Maintain extreme character and item consistency. Use ${aspectRatio} ratio. High quality, cinematic.`;
+[DIRECTIVE]: Match composition and lighting to the provided images. Maintain extreme character and item consistency. Use ${aspectRatio} ratio. High quality, cinematic. Ensure the character's acting reflects their defined personality traits.`;
 
     parts.push({ text: masterPrompt });
 
@@ -212,8 +212,10 @@ ${customStyleDescription ? `[STYLE DIRECTION]: ${customStyleDescription}` : ""}
     const styleKeywords = styleObj ? `${styleObj.name.en} style` : globalStyle;
     
     const prompt = `CHARACTER CONCEPT DESIGN SHEET:
-    Name: ${character.name}, Traits: ${character.keyFeatures.join(', ')}.
-    Style: ${styleKeywords}. Front and side view, neutral background.`;
+    Name: ${character.name}, 
+    Visual Traits: ${character.keyFeatures.join(', ')},
+    Personality Vibe: ${character.personality || 'Generic'}.
+    Style: ${styleKeywords}. Front and side view, professional concept art sheet, neutral background, consistent lighting.`;
     
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',

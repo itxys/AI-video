@@ -12,7 +12,9 @@ export interface CharacterProfile {
   age?: string;
   gender?: string;
   occupation?: string;
-  description: string;
+  description: string; // Brief summary
+  personality?: string;
+  backstory?: string;
   keyFeatures: string[];
   referenceImageUrl?: string;
   isGlobal?: boolean;
@@ -77,7 +79,7 @@ export interface ChatMessage {
 export const VISUAL_STYLES = [
   { id: 'cinematic', name: { en: 'Cinematic', zh: '电影感' }, description: { en: 'High contrast, dramatic lighting, anamorphic lenses', zh: '高对比度，戏剧化光影，变形宽银幕镜头感' } },
   { id: 'anime', name: { en: 'Anime', zh: '二次元' }, description: { en: 'Modern Japanese animation style, vibrant line art', zh: '现代日系动画风格，鲜明的线条与赛璐璐上色' } },
-  { id: 'noir', name: { en: 'Film Noir', zh: '黑色电影' }, description: { en: 'B&W, high contrast, moody shadows, chiaroscuro', zh: '黑白，高对比度，忧郁阴影，明暗对比法' } },
+  { id: 'noir', name: { en: 'Film Noir', zh: '黑色电影' }, description: { en: 'B&W, high contrast, moody shadows, chiaroscuro', zh: '黑白，高对比度，忧育阴影，明暗对比法' } },
   { id: 'cyberpunk', name: { en: 'Cyberpunk', zh: '赛博朋克' }, description: { en: 'Neon lights, futuristic, rainy streets, high-tech low-life', zh: '霓虹灯，未来感，多雨街道，高科技低生活' } },
   { id: 'sketch', name: { en: 'Sketch', zh: '手绘草图' }, description: { en: 'Traditional hand-drawn storyboard, charcoal and graphite', zh: '传统手绘分镜风格，木炭与石墨质感' } },
   { id: '3d-render', name: { en: '3D Render', zh: '3D 渲染' }, description: { en: 'Unreal Engine 5, Octane render, raytracing, photorealistic', zh: '虚幻引擎5，Octane 渲染，光线追踪，写实 3D' } },
@@ -142,8 +144,10 @@ export const TRANSLATIONS = {
     characterAge: "Age",
     characterGender: "Gender",
     characterOccupation: "Occupation",
-    characterTraits: "Visual Traits (comma separated)",
-    characterDescription: "Backstory & Personality",
+    characterTraits: "Visual Traits",
+    characterDescription: "Summary",
+    characterPersonality: "Personality & Mannerisms",
+    characterBackstory: "Detailed Backstory",
     itemName: "Item Name",
     itemDescription: "Visual Details",
     labelCustomStyle: "Custom Style Prompt",
@@ -223,8 +227,10 @@ export const TRANSLATIONS = {
     characterAge: "年龄",
     characterGender: "性别",
     characterOccupation: "职业",
-    characterTraits: "视觉特征（用逗号隔开）",
-    characterDescription: "背景故事与性格描述",
+    characterTraits: "视觉特征",
+    characterDescription: "简介",
+    characterPersonality: "性格与言谈举止",
+    characterBackstory: "详细背景故事",
     itemName: "物品名称",
     itemDescription: "外观细节描述",
     labelCustomStyle: "自定义风格描述",

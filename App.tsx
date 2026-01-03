@@ -256,7 +256,7 @@ const App: React.FC = () => {
       <div className="flex flex-1 overflow-hidden relative">
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           {step === 'seed' && (
-            <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in pb-20">
+            <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in pb-20">
               <div className="text-center space-y-6">
                 <h2 className="text-6xl font-black text-white tracking-tight">{t.heroTitle}</h2>
                 <p className="text-slate-400 text-xl max-w-2xl mx-auto">{t.heroSubtitle}</p>
@@ -294,7 +294,7 @@ const App: React.FC = () => {
           )}
 
           {step === 'concept_review' && refinedConcept && (
-            <div className="max-w-4xl mx-auto space-y-10 pb-20">
+            <div className="max-w-7xl mx-auto space-y-10 pb-20">
                <div className="bg-slate-900/40 p-10 rounded-3xl border border-slate-800 backdrop-blur-md space-y-12">
                  <h2 className="text-3xl font-black text-emerald-400 uppercase tracking-widest">{refinedConcept.title}</h2>
                  <p className="text-2xl text-slate-100 italic">"{refinedConcept.premise}"</p>
