@@ -147,7 +147,8 @@ export class GeminiService {
     if (shot.characterInvolved) {
       const char = characters.find(c => c.id === shot.characterInvolved);
       if (char) {
-        characterEmphasis = `[CHARACTER IDENTITY]: Name: ${char.name}. Traits: ${char.keyFeatures.join(', ')}. Personality: ${char.personality || 'Standard'}. Backstory Context: ${char.backstory || 'None'}. Expression and pose should reflect their personality.`;
+        const traits = Array.isArray(char.keyFeatures) ? char.keyFeatures.join(', ') : char.keyFeatures;
+        characterEmphasis = `[CHARACTER IDENTITY]: Name: ${char.name}. Traits: ${traits}. Personality: ${char.personality || 'Standard'}. Backstory Context: ${char.backstory || 'None'}. Expression and pose should reflect their personality.`;
         if (char.referenceImageUrl) {
           const data = char.referenceImageUrl.split('base64,')[1] || char.referenceImageUrl;
           parts.push({ inlineData: { data, mimeType: 'image/png' } });
@@ -203,30 +204,51 @@ ${customStyleDescription ? `[STYLE DIRECTION]: ${customStyleDescription}` : ""}
     for (const part of response.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
     }
-    throw new Error("No image returned");
+    throw new Error("No image returned by the model. This may be due to safety filters or an invalid prompt.");
   }
 
   async generateCharacterReference(character: CharacterProfile, globalStyle: string): Promise<string> {
     const ai = this.getClient();
     const styleObj = VISUAL_STYLES.find(s => s.id === globalStyle);
     const styleKeywords = styleObj ? `${styleObj.name.en} style` : globalStyle;
+    const traits = Array.isArray(character.keyFeatures) ? character.keyFeatures.join(', ') : character.keyFeatures;
     
     const prompt = `CHARACTER CONCEPT DESIGN SHEET:
-    Name: ${character.name}, 
-    Visual Traits: ${character.keyFeatures.join(', ')},
-    Personality Vibe: ${character.personality || 'Generic'}.
-    Style: ${styleKeywords}. Front and side view, professional concept art sheet, neutral background, consistent lighting.`;
+    Name: ${character.name || 'Unknown Character'}, 
+    Visual Traits: ${traits || 'Distinctive features'},
+    Personality Vibe: ${character.personality || 'Neutral'}.
+    Aesthetic Style: ${styleKeywords}.
+    
+    IMAGE REQUIREMENTS:
+    - Character concept art showing full body front view and side profile.
+    - High quality digital painting, professional design sheet.
+    - Neutral plain background, studio lighting.
+    - Consistent anatomical details.
+    - Style must strictly follow: ${styleKeywords}.`;
     
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
-      contents: prompt,
-      config: { imageConfig: { aspectRatio: "1:1" } }
+      contents: {
+        parts: [{ text: prompt }]
+      },
+      config: { 
+        imageConfig: { aspectRatio: "1:1" } 
+      }
     });
 
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
+    const candidate = response.candidates?.[0];
+    if (!candidate || !candidate.content || !candidate.content.parts) {
+      throw new Error("Empty response from AI for character design.");
     }
-    throw new Error("Failed character generation");
+
+    for (const part of candidate.content.parts) {
+      if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
+      if (part.text) {
+        console.warn("AI returned text instead of image:", part.text);
+      }
+    }
+
+    throw new Error("Failed to generate character reference image. The AI may have declined the request due to safety policies.");
   }
 
   async editShotImage(base64Image: string, editPrompt: string): Promise<string> {

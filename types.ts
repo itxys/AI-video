@@ -17,6 +17,7 @@ export interface CharacterProfile {
   backstory?: string;
   keyFeatures: string[];
   referenceImageUrl?: string;
+  alternateImages?: string[]; // To store multiple generation attempts
   isGlobal?: boolean;
 }
 
@@ -131,7 +132,8 @@ export const TRANSLATIONS = {
     labelKeyItems: "Key Item Library",
     addCharacter: "+ Add Character",
     addItem: "+ Add Key Item",
-    btnGenCharRef: "Gen Ref",
+    btnGenCharRef: "Draw Character",
+    btnGachaAgain: "Draw Again",
     assignChar: "Assign Role",
     assignItem: "Assign Item",
     consistencyBadge: "Consistent",
@@ -168,7 +170,8 @@ export const TRANSLATIONS = {
     tabItems: "Props & Items",
     btnDeleteSelected: "Delete Selected",
     searchPlaceholder: "Search assets...",
-    bulkActions: "Bulk Actions"
+    bulkActions: "Bulk Actions",
+    galleryTitle: "Generation History"
   },
   zh: {
     heroTitle: 'Visionary AI 创意工作室',
@@ -214,7 +217,8 @@ export const TRANSLATIONS = {
     labelKeyItems: "重要物品库",
     addCharacter: "+ 新建角色",
     addItem: "+ 添加物品",
-    btnGenCharRef: "生成参考",
+    btnGenCharRef: "生成角色 (抽卡)",
+    btnGachaAgain: "再次抽卡",
     assignChar: "指定角色",
     assignItem: "指定物品",
     consistencyBadge: "已同步",
@@ -251,6 +255,7 @@ export const TRANSLATIONS = {
     tabItems: "道具物品",
     btnDeleteSelected: "删除所选",
     searchPlaceholder: "搜索资源...",
-    bulkActions: "批量操作"
+    bulkActions: "批量操作",
+    galleryTitle: "历史抽卡记录"
   }
 };

@@ -34,6 +34,7 @@ const App: React.FC = () => {
   const [globalLibrary, setGlobalLibrary] = useState<CharacterProfile[]>([]);
   const [globalItems, setGlobalItems] = useState<KeyItem[]>([]);
   const [isGeneratingRef, setIsGeneratingRef] = useState<number | null>(null);
+  const [isGeneratingGlobalRef, setIsGeneratingGlobalRef] = useState<number | null>(null);
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -221,6 +222,36 @@ const App: React.FC = () => {
     alert(language === 'zh' ? '已同步到资源库' : 'Synced to Vault');
   };
 
+  const handleGenerateCharRef = async (idx: number, isGlobal: boolean = false) => {
+    if (isGlobal) {
+      setIsGeneratingGlobalRef(idx);
+    } else {
+      setIsGeneratingRef(idx);
+    }
+
+    try {
+      const profiles = isGlobal ? globalLibrary : characterProfiles;
+      const char = profiles[idx];
+      const url = await geminiService.generateCharacterReference(char, visualStyle);
+      
+      const updatedProfiles = [...profiles];
+      const target = updatedProfiles[idx];
+      target.referenceImageUrl = url;
+      target.alternateImages = [url, ...(target.alternateImages || [])].slice(0, 8); // Keep last 8 draws
+      
+      if (isGlobal) {
+        setGlobalLibrary(updatedProfiles);
+      } else {
+        setCharacterProfiles(updatedProfiles);
+      }
+    } catch (e) {
+      handleApiError(e);
+    } finally {
+      if (isGlobal) setIsGeneratingGlobalRef(null);
+      else setIsGeneratingRef(null);
+    }
+  };
+
   if (hasKey === false) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
@@ -318,10 +349,11 @@ const App: React.FC = () => {
                     </div>
                     <CharacterBible 
                       profiles={characterProfiles} onAdd={() => setCharacterProfiles([...characterProfiles, {id: crypto.randomUUID(), name:'', description:'', keyFeatures:[]}])} 
-                      onUpdate={(i,f,v) => { const u = [...characterProfiles]; (u[i] as any)[f] = typeof v === 'string' && f === 'keyFeatures' ? v.split(',').map(s=>s.trim()) : v; setCharacterProfiles(u); }} 
+                      onUpdate={(i,f,v) => { const u = [...characterProfiles]; (u[i] as any)[f] = v; setCharacterProfiles(u); }} 
                       onRemove={(i) => setCharacterProfiles(characterProfiles.filter((_,idx) => idx !== i))} 
                       onSaveToLib={(char) => handleSaveToVault('char', char)}
-                      onGenerateRef={async (i) => { setIsGeneratingRef(i); try { const url = await geminiService.generateCharacterReference(characterProfiles[i], visualStyle); const u = [...characterProfiles]; u[i].referenceImageUrl = url; setCharacterProfiles(u); } catch (e) { handleApiError(e); } finally { setIsGeneratingRef(null); } }} 
+                      onGenerateRef={(i) => handleGenerateCharRef(i)} 
+                      isGeneratingRef={isGeneratingRef}
                       language={language} 
                     />
                  </div>
@@ -363,6 +395,8 @@ const App: React.FC = () => {
           <GlobalAssetVault 
             characters={globalLibrary} items={globalItems}
             onUpdateCharacters={setGlobalLibrary} onUpdateItems={setGlobalItems}
+            onGenerateCharRef={(idx) => handleGenerateCharRef(idx, true)}
+            isGeneratingGlobalRef={isGeneratingGlobalRef}
             onClose={() => setShowVault(false)} language={language}
           />
         )}
