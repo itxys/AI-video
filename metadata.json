@@ -1,0 +1,8 @@
+{
+  "name": "Visionary AI Storyboard",
+  "description": "A professional AI-driven storyboard creation tool that generates detailed scripts from prompts and consistent visual storyboards for filmmakers.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
