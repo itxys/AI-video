@@ -23,6 +23,7 @@ export interface KeyItem {
   name: string;
   description: string;
   imageUrl?: string;
+  isGlobal?: boolean;
 }
 
 export type ShotStatus = 'idle' | 'generating' | 'completed' | 'error' | 'animating';
@@ -38,8 +39,8 @@ export interface Shot {
   videoUrl?: string;
   status: ShotStatus;
   characterInvolved?: string;
-  itemsInvolved?: string[]; // Multiple items can be in a shot
-  baseReferenceImage?: string; // For Img2Img functionality
+  itemsInvolved?: string[]; 
+  baseReferenceImage?: string; 
 }
 
 export interface StoryboardScript {
@@ -150,15 +151,20 @@ export const TRANSLATIONS = {
     confirmGenTitle: "Start Generation?",
     confirmGenDesc: "This will use processing resources. Continue?",
     btnConfirm: "Confirm",
-    libraryTitle: "Global Assets",
+    libraryTitle: "Asset Vault",
     btnImportFromLib: "Import from Library",
     btnSaveToLib: "Save to Library",
-    libEmpty: "Your library is empty. Create assets to see them here.",
-    btnManageLib: "Manage Assets",
+    libEmpty: "Your vault is empty.",
+    btnManageLib: "Open Asset Vault",
     imgToImgTitle: "Image to Image",
     uploadBaseRef: "Upload Base Image",
     baseRefActive: "Using Reference Image",
-    itemLibrary: "Prop & Item Library"
+    itemLibrary: "Prop & Item Library",
+    tabCharacters: "Characters",
+    tabItems: "Props & Items",
+    btnDeleteSelected: "Delete Selected",
+    searchPlaceholder: "Search assets...",
+    bulkActions: "Bulk Actions"
   },
   zh: {
     heroTitle: 'Visionary AI 创意工作室',
@@ -229,11 +235,16 @@ export const TRANSLATIONS = {
     libraryTitle: "全局资源库",
     btnImportFromLib: "从库中导入",
     btnSaveToLib: "同步到资源库",
-    libEmpty: "资源库为空。在项目中创建资源并同步，或在此手动添加。",
+    libEmpty: "资源库为空。",
     btnManageLib: "管理资源库",
     imgToImgTitle: "图生图模式",
     uploadBaseRef: "上传底图",
     baseRefActive: "正在使用参考底图",
-    itemLibrary: "重要道具与物品库"
+    itemLibrary: "重要道具与物品库",
+    tabCharacters: "角色",
+    tabItems: "道具物品",
+    btnDeleteSelected: "删除所选",
+    searchPlaceholder: "搜索资源...",
+    bulkActions: "批量操作"
   }
 };
