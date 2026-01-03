@@ -15,7 +15,14 @@ export interface CharacterProfile {
   description: string;
   keyFeatures: string[];
   referenceImageUrl?: string;
-  isGlobal?: boolean; // Indicates if it's saved in the global library
+  isGlobal?: boolean;
+}
+
+export interface KeyItem {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
 }
 
 export type ShotStatus = 'idle' | 'generating' | 'completed' | 'error' | 'animating';
@@ -29,9 +36,10 @@ export interface Shot {
   dialogue?: string;
   imageUrl?: string;
   videoUrl?: string;
-  previousImageUrl?: string;
   status: ShotStatus;
   characterInvolved?: string;
+  itemsInvolved?: string[]; // Multiple items can be in a shot
+  baseReferenceImage?: string; // For Img2Img functionality
 }
 
 export interface StoryboardScript {
@@ -42,6 +50,7 @@ export interface StoryboardScript {
   shots: Shot[];
   referenceImages?: string[]; 
   characterProfiles?: CharacterProfile[];
+  keyItems?: KeyItem[];
 }
 
 export interface SavedProject {
@@ -116,9 +125,12 @@ export const TRANSLATIONS = {
     labelAspect: "Aspect Ratio",
     labelSize: "Resolution",
     labelCharacterProfile: "Character Bible",
+    labelKeyItems: "Key Item Library",
     addCharacter: "+ Add Character",
+    addItem: "+ Add Key Item",
     btnGenCharRef: "Gen Ref",
     assignChar: "Assign Role",
+    assignItem: "Assign Item",
     consistencyBadge: "Consistent",
     actionLabel: "Action",
     videoPromptPlaceholder: "Describe the movement (e.g., slow zoom in, character smiles...)",
@@ -131,16 +143,22 @@ export const TRANSLATIONS = {
     characterOccupation: "Occupation",
     characterTraits: "Visual Traits (comma separated)",
     characterDescription: "Backstory & Personality",
+    itemName: "Item Name",
+    itemDescription: "Visual Details",
     labelCustomStyle: "Custom Style Prompt",
     placeholderCustomStyle: "e.g. Ghibli aesthetic, oil painting texture, soft golden hour lighting...",
     confirmGenTitle: "Start Generation?",
     confirmGenDesc: "This will use processing resources. Continue?",
     btnConfirm: "Confirm",
-    libraryTitle: "Global Character Library",
+    libraryTitle: "Global Assets",
     btnImportFromLib: "Import from Library",
     btnSaveToLib: "Save to Library",
-    libEmpty: "Your character library is empty. Create characters to see them here.",
-    btnManageLib: "Manage Library"
+    libEmpty: "Your library is empty. Create assets to see them here.",
+    btnManageLib: "Manage Assets",
+    imgToImgTitle: "Image to Image",
+    uploadBaseRef: "Upload Base Image",
+    baseRefActive: "Using Reference Image",
+    itemLibrary: "Prop & Item Library"
   },
   zh: {
     heroTitle: 'Visionary AI 创意工作室',
@@ -183,9 +201,12 @@ export const TRANSLATIONS = {
     labelAspect: "画幅比例",
     labelSize: "画面分辨率",
     labelCharacterProfile: "角色档案",
+    labelKeyItems: "重要物品库",
     addCharacter: "+ 新建角色",
+    addItem: "+ 添加物品",
     btnGenCharRef: "生成参考",
     assignChar: "指定角色",
+    assignItem: "指定物品",
     consistencyBadge: "已同步",
     actionLabel: "动作描述",
     videoPromptPlaceholder: "描述动态效果（例如：镜头缓慢拉近，角色微笑...）",
@@ -198,15 +219,21 @@ export const TRANSLATIONS = {
     characterOccupation: "职业",
     characterTraits: "视觉特征（用逗号隔开）",
     characterDescription: "背景故事与性格描述",
+    itemName: "物品名称",
+    itemDescription: "外观细节描述",
     labelCustomStyle: "自定义风格描述",
     placeholderCustomStyle: "例如：吉卜力美术风格，油画质感，柔和的黄金时段光效...",
     confirmGenTitle: "确定开始生成？",
     confirmGenDesc: "该过程将消耗计算资源。是否继续？",
     btnConfirm: "确认",
-    libraryTitle: "全局角色库",
+    libraryTitle: "全局资源库",
     btnImportFromLib: "从库中导入",
-    btnSaveToLib: "同步到角色库",
-    libEmpty: "角色库为空。在项目中创建角色并同步，或在此手动添加。",
-    btnManageLib: "管理角色库"
+    btnSaveToLib: "同步到资源库",
+    libEmpty: "资源库为空。在项目中创建资源并同步，或在此手动添加。",
+    btnManageLib: "管理资源库",
+    imgToImgTitle: "图生图模式",
+    uploadBaseRef: "上传底图",
+    baseRefActive: "正在使用参考底图",
+    itemLibrary: "重要道具与物品库"
   }
 };
